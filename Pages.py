@@ -268,7 +268,7 @@ class AddEventPage(tk.Frame):
         title_entry.grid(row=0, column=1, pady=5)
 
         # Date
-        date_label = tk.Label(form_frame, text="Date (DD-MM-YYYY):", font=("Montserrat", 12))
+        date_label = tk.Label(form_frame, text="Date (MM-DD-YYYY):", font=("Montserrat", 12))
         date_label.grid(row=1, column=0, sticky="w", pady=5)
         date_var = tk.StringVar()
         date_entry = ttk.Entry(form_frame, textvariable=date_var, font=("Montserrat", 12), width=40)
