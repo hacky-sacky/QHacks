@@ -95,7 +95,60 @@ class FirstPage(tk.Frame):
 
         search_bar = tk.Entry(self, font=('Arial 15 bold'))
         search_bar.place(x=50, y=100, height=50, width=400)
+        search_bar.bind("<Return>", lambda event: show_details_of_event(search_bar.get()))
+        search_bar.delete(0, tk.END)
 
+        def show_details_of_event(event_title):
+            events_file = "events.txt"
+
+            """
+            Displays the details of a specific event when the user clicks the corresponding button.
+            """
+            events_window = tk.Toplevel()
+            events_window.title("Events")
+            events_window.geometry("600x600")
+
+            header_label = tk.Label(events_window, text="Events", font=("Montserrat", 18, "bold"))
+            header_label.pack(pady=20)
+
+            events_frame = tk.Frame(events_window)
+            events_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+            close_button = tk.Button(events_window, text="Close", command=events_window.destroy)
+            close_button.pack(pady=10)
+
+            for widget in events_frame.winfo_children():
+                widget.destroy()  # Clear existing content
+
+            if os.path.exists(events_file):
+                with open(events_file, "r") as file:
+                    for line in file:
+                        title, date, time, description, location, event_type = line.strip().split("|")
+                        if title == event_title:
+                            # Create a frame for event details
+                            event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                            event_box.pack(fill="x", pady=5)
+
+                            event_title_label = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
+                            event_title_label.pack(anchor="w")
+
+                            event_details = tk.Label(event_box,
+                                                     text=f"Type: {event_type} | Time: {time} | Location: {location}",
+                                                     font=("Montserrat", 12))
+                            event_details.pack(anchor="w")
+
+                            event_description = tk.Label(event_box, text=description, font=("Montserrat", 10),
+                                                         fg="gray")
+                            event_description.pack(anchor="w")
+                            search_bar.delete(0, tk.END)
+                            return
+
+                        else:
+                            no_events_label = tk.Label(events_frame, text="Event details not found.",
+                                                       font=("Montserrat", 14))
+                            no_events_label.pack(pady=20)
+
+                            search_bar.delete(0, tk.END)
         try_smth_new_txt = tk.Label(self, text='try something new ...', bg='grey', fg='blue', font=underlined_font)
         try_smth_new_txt.place(x=150, y=200, height=25, width=150)
 
