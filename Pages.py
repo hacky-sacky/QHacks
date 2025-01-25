@@ -1,13 +1,30 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
+import socket
 
 import csv
 import os
 from tkinter import font
 
-profile = [1]
+#global variables
 
+#T/F for if login or not
+i = 0
+
+
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(("10.216.133.33", 9999))
+
+server.listen(1)
+print("Waiting for signal")
+
+while True:
+    client, addr = server.accept()
+    print("k")
+
+    client.send('Hello Client'.encode())
+    print(client.recv(1024).decode())
 
 LARGEFONT = ("Verdana", 35)
 
@@ -62,6 +79,12 @@ class tkinterApp(tk.Tk):
 
 
 
+def test(num):
+    if num == 1:
+       return ProfilePage
+    else:
+       return AccountPages
+
 
 # first window frame startpage
 class FirstPage(tk.Frame):
@@ -84,10 +107,12 @@ class FirstPage(tk.Frame):
         chat_wt_ppl_btn.place(x=187.5, y=10, height=30, width=125)
 
 
+        global i
 
 
-        account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold', command= lambda: controller.show_frame(AccountPages))
+        account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold', command= lambda: controller.show_frame(test(i)))
         account_btn.place(x=337.5, y=10, height=30, width=125)
+        print(f'also {i}')
 
 
         underlined_font = font.Font(family="Arial", size=12, underline=True)
@@ -143,12 +168,6 @@ class FirstPage(tk.Frame):
                             search_bar.delete(0, tk.END)
                             return
 
-                        else:
-                            no_events_label = tk.Label(events_frame, text="Event details not found.",
-                                                       font=("Montserrat", 14))
-                            no_events_label.pack(pady=20)
-
-                            search_bar.delete(0, tk.END)
         try_smth_new_txt = tk.Label(self, text='try something new ...', bg='grey', fg='blue', font=underlined_font)
         try_smth_new_txt.place(x=150, y=200, height=25, width=150)
 
@@ -392,7 +411,8 @@ class SignUpPage(tk.Frame):
                 error = tk.Label(self, text="username taken nt bro", fg='red')
                 error.place(x=200, y=280)
             else:
-                print(profile)
+                global i
+                i = 1
                 self.after(1, lambda: controller.show_frame(FirstPage))
 
         signup_button = tk.Button(self,
@@ -415,6 +435,7 @@ class SignUpPage(tk.Frame):
 
         passy = tk.Label(self, text="pass:")
         passy.place(x=100, y=200)
+
 
 class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -457,6 +478,9 @@ class LoginPage(tk.Frame):
                 error = tk.Label(self, text="wrong password bro", fg='red')
                 error.place(x=200, y=280)
             else:
+                global i
+
+                i = 1
                 self.after(1, lambda: controller.show_frame(FirstPage))
 
 
@@ -488,14 +512,11 @@ class LoginPage(tk.Frame):
         back_button.place(x=20, y=20, height=20, width = 34)
 
 
-
 class ProfilePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width = 34)
 
         bg = PhotoImage(file="pictures/signupbg.png")
         bglabel = Label(self, image=bg)
@@ -506,6 +527,11 @@ class ProfilePage(tk.Frame):
         pfplabel = Label(self, image=pfp)
         pfplabel.image = pfp
         pfplabel.place(x=100, y=100)
+
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width = 34)
+
+
 
 class EventsPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -561,36 +587,48 @@ class EventsPage(tk.Frame):
         back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
         back_button.place(x=20, y=20, height=20, width = 34)
 
+        #bounds for displaying the events
+        lower = 0
+        upper = 2
 
         if os.path.exists(events_file):
             with open(events_file, "r") as file:
-                for line in file:
-                    title, date, time, description, location, event_type = line.strip().split("|")
-                    event = {
-                        "title": title,
-                        "date": date,
-                        "time": time,
-                        "description": description,
-                        "location": location,
-                        "type": event_type
-                    }
+                for i,line in enumerate(file):
+                    if lower<=i<=upper:
 
-                    event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
-                    event_box.pack(fill="x", pady=5)
+                        title, date, time, description, location, event_type = line.strip().split("|")
+                        event = {
+                            "title": title,
+                            "date": date,
+                            "time": time,
+                            "description": description,
+                            "location": location,
+                            "type": event_type
+                        }
 
-                    event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
-                    event_title.pack(anchor="w")
+                        event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                        event_box.pack(fill="x", pady=5)
 
-                    event_details = tk.Label(event_box,
-                                             text=f"Event type: {event_type} | Time: {time} | Location: {location}",
-                                             font=("Montserrat", 12))
-                    event_details.pack(anchor="w")
+                        event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
+                        event_title.pack(anchor="w")
 
-                    view_button = ttk.Button(event_box, text="View", command=lambda e=event: show_event_details(e))
-                    view_button.pack(anchor="e", pady=5)
+                        event_details = tk.Label(event_box,
+                                                 text=f"Event type: {event_type} | Time: {time} | Location: {location}",
+                                                 font=("Montserrat", 12))
+                        event_details.pack(anchor="w")
+
+                        view_button = ttk.Button(event_box, text="View", command=lambda e=event: show_event_details(e))
+                        view_button.pack(anchor="e", pady=5)
+
+                        view_button = tk.Button(self, text="next page")
+                        view_button.pack(anchor="e", pady=5)
+
+
+
         else:
             no_events_label = tk.Label(events_frame, text="No events added yet.", font=("Montserrat", 14))
             no_events_label.pack(pady=20)
+
 
 
 
