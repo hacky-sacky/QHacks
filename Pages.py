@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import os
 from tkinter import font
 LARGEFONT = ("Verdana", 35)
 
@@ -84,9 +85,18 @@ class FirstPage(tk.Frame):
 class AddEventPage(tk.Frame):
     def __init__(self, parent, controller):
 
+
         tk.Frame.__init__(self, parent)
+        events_file = "events.txt"
         # Function that handles form submission
         def submit_event():
+            """
+            This function gets all the data entries from the 'Add New Event' page
+            and checks that if all data entry is 'gotten' (from .get) and appends
+            all data to a txt.file. It also displays a text that the event has been
+            all data to a txt.file. It also displays a text that the event has been
+            added or not added in case the user didn't fill all the entry fields.
+            """
             title = title_var.get()
             date = date_var.get()
             start_time = start_time_var.get()
@@ -96,10 +106,63 @@ class AddEventPage(tk.Frame):
             event_type = type_var.get()
 
             if all([title, date, start_time, end_time, description, location, event_type]):
+                with open(events_file, "a") as file:
+                    file.write(f"{title}|{date}|{start_time}-{end_time}|{description}|{location}|{event_type}\n")
                 result_label.config(text=f"Event '{title}' added successfully!", fg="green")
                 self.after(2000, lambda: controller.show_frame(FirstPage))
+                clear_form()
+
+        def clear_form():
+            """
+            This function clears the form after a user has wrote
+            in all fields of entry and has submitted it. This is
+            called after the user presses the submit button.
+            """
+            title_var.set("")
+            date_var.set("")
+            start_time_var.set("")
+            end_time_var.set("")
+            description_text.delete("1.0", tk.END)
+            location_var.set("")
+            type_var.set("")
+
+        def show_events_page():
+            """
+            This function displays the 'Events' page with all the events added
+            by users.
+            This function reads the txt file that was created and creates a list
+            of all data entries and puts them in a label which is ultimately
+            displayed on the 'Events' page. If there are no events added and a
+            user goes on this page, it says 'No events added'.
+            """
+            events_window = tk.Toplevel(self)
+            events_window.title("Events")
+            events_window.geometry("600x600")
+
+            header_label = tk.Label(events_window, text="Events", font=("Montserrat", 18, "bold"))
+            header_label.pack(pady=20)
+
+            events_frame = tk.Frame(events_window)
+            events_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+            if os.path.exists(events_file):
+                with open(events_file, "r") as file:
+                    for line in file:
+                        title, date, time, description, location, event_type = line.strip().split("|")
+                        event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                        event_box.pack(fill="x", pady=5)
+
+                        event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
+                        event_title.pack(anchor="w")
+
+                        event_details = tk.Label(event_box, text=f"Type: {event_type} | Time: {time} | Location: {location}", font=("Montserrat", 12))
+                        event_details.pack(anchor="w")
+
+                        event_description = tk.Label(event_box, text=description, font=("Montserrat", 10), fg="gray")
+                        event_description.pack(anchor="w")
             else:
-                result_label.config(text="Please fill out all fields.", fg="red")
+                no_events_label = tk.Label(events_frame, text="No events added yet.", font=("Montserrat", 14))
+                no_events_label.pack(pady=20)
 
 
         # Creating a header
@@ -155,8 +218,7 @@ class AddEventPage(tk.Frame):
         type_label = tk.Label(form_frame, text="Type of Event:", font=("Montserrat", 12))
         type_label.grid(row=6, column=0, sticky="w", pady=5)
         type_var = tk.StringVar()
-        type_dropdown = ttk.Combobox(form_frame, textvariable=type_var, font=("Montserrat", 12), width=38,
-                                     state="readonly")
+        type_dropdown = ttk.Combobox(form_frame, textvariable=type_var, font=("Montserrat", 12), width=38, state="readonly")
         type_dropdown['values'] = ["Sports", "Food", "Entertainment", "Shopping", "Study"]
         type_dropdown.grid(row=6, column=1, pady=5)
 
@@ -167,9 +229,9 @@ class AddEventPage(tk.Frame):
         cancel_button = ttk.Button(self, text="Cancel", command=lambda: controller.show_frame(FirstPage))
         cancel_button.place(x=270, y=400)
 
-
         result_label = tk.Label(self, text="", font=("Montserrat", 12))
-        result_label.place(y=450, x=150)
+        result_label.pack(pady=10)
+
 
 
 # Driver Code
