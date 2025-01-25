@@ -6,8 +6,6 @@ import csv
 import os
 from tkinter import font
 
-login = False
-login_action = ''
 profile = [1]
 
 
@@ -72,7 +70,12 @@ class FirstPage(tk.Frame):
     def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
-        self.config(bg='grey')
+
+        bg = PhotoImage(file="pictures/signupbg.png")
+        bglabel = Label(self, image=bg)
+        bglabel.image = bg
+        bglabel.place(x=0, y=0)
+
 
         thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'), command= lambda: controller.show_frame(EventsPage))
         thing_to_do_btn.place(x=30, y=10, height=30, width=125)
@@ -80,13 +83,10 @@ class FirstPage(tk.Frame):
         chat_wt_ppl_btn = tk.Button(self, text='Chat With People', bg='light grey', font=('Arial 10 bold'))
         chat_wt_ppl_btn.place(x=187.5, y=10, height=30, width=125)
 
-        def action():
-            if login:
-                return lambda: controller.show_frame(ProfilePage)
-            return lambda: controller.show_frame(AccountPages)
 
 
-        account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold', command= action())
+
+        account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold', command= lambda: controller.show_frame(AccountPages))
         account_btn.place(x=337.5, y=10, height=30, width=125)
 
 
@@ -186,6 +186,7 @@ class AddEventPage(tk.Frame):
                 result_label.config(text=f"Event '{title}' added successfully!", fg="green")
                 clear_form()
                 self.after(2000, lambda: controller.show_frame(FirstPage))
+                result_label.destroy()
             else:
                 result_label.config(text="Please fill out all fields.", fg="red")
                 result_label.place(x=170, y=450)
@@ -309,25 +310,32 @@ class AccountPages(tk.Frame):
 
         bg = PhotoImage(file="pictures/signupbg.png")
         bglabel = Label(self, image=bg)
+        bglabel.image = bg
         bglabel.place(x=0, y=0)
 
         signup_button = tk.Button(self, command= lambda: controller.show_frame(SignUpPage),
                                   text='Sign Up',
-                                  bg='#52bfdc',
-                                  font=('Modern', 100))
-        signup_button.place(x=60, y=70)
+                                  bg='light blue',
+                                  font=('Arial 30 bold'))
+        signup_button.place(x=160, y=70, height= 100, width= 200)
 
         login_button = tk.Button(self,
                                  text='Log In',
-                                 bg='#52bfdc',
-                                 font=('Modern', 100),
+                                 bg='light blue',
+                                 font=('Arial 30 bold'),
                                  command= lambda: controller.show_frame(LoginPage))
-        login_button.place(x=93, y=270)
+        login_button.place(x=160, y=270, height= 100, width = 200)
+
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width = 34)
 
 
 class SignUpPage(tk.Frame):
     def __init__(self, parent, controller):
+
         tk.Frame.__init__(self, parent)
+
+
         login_status = False
         user_pass = []
 
@@ -384,7 +392,6 @@ class SignUpPage(tk.Frame):
                 error = tk.Label(self, text="username taken nt bro", fg='red')
                 error.place(x=200, y=280)
             else:
-                login =True
                 print(profile)
                 self.after(1, lambda: controller.show_frame(FirstPage))
 
@@ -400,12 +407,14 @@ class SignUpPage(tk.Frame):
         password = tk.Entry(self, bg='white', fg='black')
         password.place(x=150, y=200)
 
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width = 34)
+
         user = tk.Label(self, text="user:")
         user.place(x=100, y=120)
 
         passy = tk.Label(self, text="pass:")
         passy.place(x=100, y=200)
-
 
 class LoginPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -424,8 +433,18 @@ class LoginPage(tk.Frame):
 
         bg = PhotoImage(file="pictures/signupbg.png")
         bglabel = Label(self, image=bg)
+        bglabel.image = bg
         bglabel.place(x=0, y=0)
 
+        def login():
+            global login_status
+            read_csv()
+            for user in user_pass:
+                if user["username"] == input_username and user["password"] == input_password:
+                    login_status = True
+                    return 1
+            return 0
+        
         def when_signup_clicked():
             global input_username
             global input_password
@@ -438,18 +457,10 @@ class LoginPage(tk.Frame):
                 error = tk.Label(self, text="wrong password bro", fg='red')
                 error.place(x=200, y=280)
             else:
-                login = True
                 self.after(1, lambda: controller.show_frame(FirstPage))
 
 
-        def login():
-            global login_status
-            read_csv()
-            for user in user_pass:
-                if user["username"] == input_username and user["password"] == input_password:
-                    login_status = True
-                    return 1
-            return 0
+
 
         def verify_login():
             return login_status
@@ -473,10 +484,19 @@ class LoginPage(tk.Frame):
         passy = tk.Label(self, text="pass:")
         passy.place(x=100, y=200)
 
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width = 34)
+
+
 
 class ProfilePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
+
+
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width = 34)
+
         bg = PhotoImage(file="pictures/signupbg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
@@ -537,6 +557,10 @@ class EventsPage(tk.Frame):
 
         events_frame = tk.Frame(self)
         events_frame.pack(pady=10, padx=20, fill="both", expand=True)
+
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width = 34)
+
 
         if os.path.exists(events_file):
             with open(events_file, "r") as file:
