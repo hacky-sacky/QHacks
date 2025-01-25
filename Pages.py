@@ -13,19 +13,6 @@ from tkinter import font
 i = 0
 
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(("10.216.133.33", 9999))
-
-server.listen(1)
-print("Waiting for signal")
-
-while True:
-    client, addr = server.accept()
-    print("k")
-
-    client.send('Hello Client'.encode())
-    print(client.recv(1024).decode())
-
 LARGEFONT = ("Verdana", 35)
 
 
@@ -85,6 +72,13 @@ def test(num):
     else:
        return AccountPages
 
+def send_info(information):
+    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client.connect(("10.216.133.33", 5050))
+
+    print(client.recv(1024).decode())
+    client.send(information.encode())
+
 
 # first window frame startpage
 class FirstPage(tk.Frame):
@@ -98,6 +92,7 @@ class FirstPage(tk.Frame):
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
+
 
 
         thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'), command= lambda: controller.show_frame(EventsPage))
@@ -175,6 +170,8 @@ class FirstPage(tk.Frame):
         add_button.place(x=430, y= 160, height=20, width=20)
 
 
+
+
 class AddEventPage(tk.Frame):
     def __init__(self, parent, controller):
 
@@ -199,6 +196,7 @@ class AddEventPage(tk.Frame):
             event_type = type_var.get()
 
             if all([title, date, start_time, end_time, description, location, event_type]):
+                send_info(f"{title}|{date}|{start_time}-{end_time}|{description}|{location}|{event_type}\n")
                 with open(events_file, "a") as file:
                     file.write(f"{title}|{date}|{start_time}-{end_time}|{description}|{location}|{event_type}\n")
 
