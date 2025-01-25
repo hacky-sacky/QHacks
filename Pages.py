@@ -32,7 +32,7 @@ class tkinterApp(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (Page1, Page2, FirstPage, AddEventPage):
+        for F in ( FirstPage, AddEventPage):
             frame = F(container, self)
 
             # initializing frame of that object from
@@ -59,10 +59,10 @@ class FirstPage(tk.Frame):
 
         self.config(bg='grey')
 
-        thing_to_do_btn = tk.Button(self, text='things to do', bg='light grey', font=('Arial 12 bold'))
-        thing_to_do_btn.place(height=30, width=125)
+        thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'))
+        thing_to_do_btn.place(x=30, y=10, height=30, width=125)
 
-        chat_wt_ppl_btn = tk.Button(self, text='chat with people', bg='light grey', font=('Arial 10 bold'))
+        chat_wt_ppl_btn = tk.Button(self, text='Chat With People', bg='light grey', font=('Arial 10 bold'))
         chat_wt_ppl_btn.place(x=187.5, y=10, height=30, width=125)
 
         account_btn = tk.Button(self, text='Account', bg='light grey', font=('Arial 12 bold'))
@@ -77,71 +77,9 @@ class FirstPage(tk.Frame):
         try_smth_new_txt = tk.Label(self, text='try something new ...', bg='grey', fg='blue', font=underlined_font)
         try_smth_new_txt.place(x=150, y=200, height=25, width=150)
 
-        button1 = ttk.Button(self, text="Page 1", command=lambda: controller.show_frame(Page1))
-        button1.grid(row=1, column=1, padx=10, pady=10)
-
-        button2 = ttk.Button(self, text="Page 2",
-                             command=lambda: controller.show_frame(Page2))
-        button2.grid(row=2, column=1, padx=10, pady=10)
-
-
         add_button = tk.Button(self, text= '+', font=('Arial 15 bold'), command=lambda: controller.show_frame(AddEventPage))
         add_button.place(x=430, y= 160, height=20, width=20)
 
-
-# second window frame page1
-class Page1(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Page 1", font=LARGEFONT)
-        label.grid(row=0, column=4, padx=10, pady=10)
-
-        # button to show frame 2 with text
-        # layout2
-        button1 = ttk.Button(self, text="StartPage",
-                             command=lambda: controller.show_frame(FirstPage))
-
-        # putting the button in its place
-        # by using grid
-        button1.grid(row=1, column=1, padx=10, pady=10)
-
-        # button to show frame 2 with text
-        # layout2
-        button2 = ttk.Button(self, text="Page 2",
-                             command=lambda: controller.show_frame(Page2))
-
-
-
-        # putting the button in its place by
-        # using grid
-        button2.grid(row=2, column=1, padx=10, pady=10)
-
-
-# third window frame page2
-class Page2(tk.Frame):
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        label = ttk.Label(self, text="Page 2", font=LARGEFONT)
-        label.grid(row=0, column=4, padx=10, pady=10)
-
-        # button to show frame 2 with text
-        # layout2
-        button1 = ttk.Button(self, text="Page 1",
-                             command=lambda: controller.show_frame(Page1))
-
-        # putting the button in its place by
-        # using grid
-        button1.grid(row=1, column=1, padx=10, pady=10)
-
-        # button to show frame 3 with texts
-        # layout3
-        button2 = ttk.Button(self, text="FirstPage",
-                             command=lambda: controller.show_frame(FirstPage))
-
-        # putting the button in its place by
-        # using grid
-        button2.grid(row=2, column=1, padx=10, pady=10)
 
 class AddEventPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -159,8 +97,10 @@ class AddEventPage(tk.Frame):
 
             if all([title, date, start_time, end_time, description, location, event_type]):
                 result_label.config(text=f"Event '{title}' added successfully!", fg="green")
+                self.after(2000, lambda: controller.show_frame(FirstPage))
             else:
                 result_label.config(text="Please fill out all fields.", fg="red")
+
 
         # Creating a header
         header_label = tk.Label(self, text="Add New Event", font=("Montserrat", 18, "bold"))
@@ -222,11 +162,14 @@ class AddEventPage(tk.Frame):
 
         # Submit button at the end of form
         submit_button = ttk.Button(self, text="Submit", command=submit_event)
-        submit_button.pack(pady=20)
+        submit_button.place(x=170, y=400)
+
+        cancel_button = ttk.Button(self, text="Cancel", command=lambda: controller.show_frame(FirstPage))
+        cancel_button.place(x=270, y=400)
 
 
         result_label = tk.Label(self, text="", font=("Montserrat", 12))
-        result_label.pack(pady=10)
+        result_label.place(y=450, x=150)
 
 
 # Driver Code
