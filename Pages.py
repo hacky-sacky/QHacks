@@ -81,44 +81,44 @@ class FirstPage(tk.Frame):
 
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/signupbg.png")
+        bg = PhotoImage(file="pictures/homepage.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
 
         thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'),
                                     command=lambda: controller.show_frame(EventsPage))
-        thing_to_do_btn.place(x=30, y=300, height=30, width=125)
+        thing_to_do_btn.place(x=30, y=360, height=30, width=125)
 
         chat_wt_ppl_btn = tk.Button(self, text='Chat With People', bg='light grey', font=('Arial 10 bold'))
-        chat_wt_ppl_btn.place(x=187.5, y=300, height=30, width=125)
+        chat_wt_ppl_btn.place(x=187.5, y=360, height=30, width=125)
 
         global i
 
-        canvas = tk.Canvas(self, width=400, height=100, bg= 'lime green', bd=0, highlightthickness=0)
-        canvas.create_text(200, 50, text="Active Kingston", font='Helvetica 40 bold', fill='gold')
-        canvas.pack()
-
+        canvas = tk.Canvas(self, width=400, height=100, bg='#3C6E47', bd=0, highlightthickness=0)
+        canvas.create_text(200, 50, text="Active Kingston", font='Helvetica 38 bold', fill='#FFB300')
+        canvas.place(x=50, y=20)
 
         account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold',
                                 command=lambda: controller.show_frame(test(i)))
-        account_btn.place(x=337.5, y=300, height=30, width=125)
+        account_btn.place(x=337.5, y=360, height=30, width=125)
         print(f'also {i}')
 
         underlined_font = font.Font(family="Arial", size=12, underline=True)
         # height = 15 pixels
 
-        search_bar = tk.Entry(self, font=('Arial 15 bold'))
-        search_bar.place(x=50, y=200, height=50, width=400)
+        search_bar = tk.Entry(self, font=('Arial 15 bold'), bg='white', fg='black', bd = 0)
+        search_bar.place(x=50, y=235, height=30, width=400, )
         search_bar.bind("<Return>", lambda event: show_details_of_event(search_bar.get()))
         search_bar.delete(0, tk.END)
 
         def show_details_of_event(event_title):
-            events_file = "events.txt"
+            events_file = "events_by_date.txt"
 
             """
             Displays the details of a specific event when the user clicks the corresponding button.
             """
+
             events_window = tk.Toplevel()
             events_window.title("Events")
             events_window.geometry("600x600")
@@ -138,7 +138,7 @@ class FirstPage(tk.Frame):
             if os.path.exists(events_file):
                 with open(events_file, "r") as file:
                     for line in file:
-                        title, date, time, description, location, event_type = line.strip().split("|")
+                        data, title, time, description, location, event_type = line.strip().split("|")
                         if title == event_title:
                             # Create a frame for event details
                             event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
@@ -158,6 +158,12 @@ class FirstPage(tk.Frame):
                             search_bar.delete(0, tk.END)
                             return
 
+    '''    search_bar = tk.Entry(self, font=('Arial 15 bold'))
+        search_bar.place(x=50, y=200, height=50, width=400)
+        search_bar.bind("<Return>", lambda event: show_details_of_event(search_bar.get()))
+        search_bar.delete(0, tk.END)'''
+
+
 
 
 
@@ -167,6 +173,11 @@ class EventsPage(tk.Frame):
     def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
+
+        bg = PhotoImage(file="pictures/eventspage.png")
+        bglabel = Label(self, image=bg)
+        bglabel.image = bg
+        bglabel.place(x=0, y=0)
 
         events_file = "events_by_date.txt"
 
@@ -180,10 +191,12 @@ class EventsPage(tk.Frame):
             date after selecting a date on the calendar then pressing
             "View Events". Same GUI as main show events page.
             """
+
             formatted_date = selected_date.lstrip("0").replace("/0", "/")
             events_window = Toplevel(self)
             events_window.title(f"Events on {formatted_date}")
             events_window.geometry("600x600")
+
 
             header_label = Label(events_window, text=f"Events on {formatted_date}", font=("Arial", 16, "bold"))
             header_label.pack(pady=10)
@@ -194,6 +207,11 @@ class EventsPage(tk.Frame):
             canvas = Canvas(events_frame)
             scrollbar = ttk.Scrollbar(events_frame, orient="vertical", command=canvas.yview)
             scrollable_frame = Frame(canvas)
+
+            bg = PhotoImage(file="pictures/eventspage.png")
+            bglabel = Label(self, image=bg)
+            bglabel.image = bg
+            bglabel.place(x=0, y=0)
 
             scrollable_frame.bind(
                 "<Configure>",
@@ -248,7 +266,7 @@ class EventsPage(tk.Frame):
                 selected_date = cal.get_date()
                 show_events_for_date(selected_date)
 
-            Button(calendar_window, text="View Events", command=get_events).pack(pady=20)
+            Button(calendar_window, text="View Events", relief=SUNKEN, command=get_events).pack(pady=20)
 
         def show_events_page():
             """
@@ -383,9 +401,9 @@ class EventsPage(tk.Frame):
 
             Button(add_window, text="View Calendar", command=calendar_page).pack(pady=20)
 
-        Button(self, text="Add New Event", command=add_event_page, width=20).pack(pady=20)
-        Button(self, text="View Calendar", command=calendar_page, width=20).pack(pady=20)
-        Button(self, text="View Events", command=show_events_page, width=20).pack(pady=20)
+        Button(self, text="Add New Event", relief = RAISED,command=add_event_page, width=20).pack(pady=20)
+        Button(self, text="View Calendar", relief = RAISED,command=calendar_page, width=20).pack(pady=20)
+        Button(self, text="View Events", relief=RAISED, command=show_events_page, width=20).pack(pady=20)
 
         back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
                                 command=lambda: controller.show_frame(FirstPage))
@@ -588,7 +606,7 @@ class LoginPage(tk.Frame):
 
 
 class ProfilePage(tk.Frame):
-    
+
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
