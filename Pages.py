@@ -3,12 +3,11 @@ from calendar import calendar
 from tkinter import ttk
 from tkinter import *
 from PIL import Image, ImageTk
-
+import random
 import csv
 import os
 from tkinter import font
 
-from pygame.examples.cursors import image
 from tkcalendar import Calendar
 
 # global variables
@@ -105,9 +104,28 @@ class FirstPage(tk.Frame):
         # height = 15 pixels
 
         search_bar = tk.Entry(self, font=('Arial 15 bold'), bg='white', fg='black', bd = 0)
-        search_bar.place(x=50, y=235, height=30, width=400, )
+        search_bar.place(x=100, y=235, height=30, width=300, )
         search_bar.bind("<Return>", lambda event: show_details_of_event(search_bar.get()))
         search_bar.delete(0, tk.END)
+
+        dice = PhotoImage(file="pictures/dice.png")
+        new_dice = dice.subsample(10, 10)
+
+        def random_generator():
+            events_file = "events_by_date.txt"
+            list = []
+
+            if os.path.exists(events_file):
+                with open(events_file, "r") as file:
+                    for line in file:
+                        date, title, time, description, location, event_type = line.strip().split("|")
+                        list.append(title)
+                    option = random.choice(list)
+                    show_details_of_event(option)
+
+        random_button = tk.Button(self, image=new_dice, command=random_generator)
+        random_button.image = new_dice
+        random_button.place(x=420, y=235)
 
         def show_details_of_event(event_title):
             events_file = "events_by_date.txt"
@@ -161,6 +179,8 @@ class FirstPage(tk.Frame):
         if not os.path.exists(events_file):
             with open(events_file, "w") as file:
                 pass
+
+
 
         def show_events_for_date(selected_date):
             """
@@ -369,7 +389,7 @@ class FirstPage(tk.Frame):
             Label(add_window, text="Type:").pack(anchor="w", padx=20)
             event_type_var = StringVar()
             event_type_dropdown = ttk.Combobox(add_window, textvariable=event_type_var,
-                                               values=["Sports", "Food", "Entertainment", "Shopping", "Study"])
+                                               values=["Sports", "Restaurants", "Bars", "Social", "Entertainment", "Shopping", "Study", "Adult", "Music","Other"])
             event_type_dropdown.pack(padx=20)
 
             error_label = Label(add_window, text="", font=("Arial", 12))
@@ -495,27 +515,27 @@ class SignUpPage(tk.Frame):
 
                 self.after(1, lambda: controller.show_frame(FirstPage))
 
+
+        sign = PhotoImage(file="pictures/signupbutton.png")
         signup_button = tk.Button(self,
                                   text='Sign Up',
-                                  bg='#52bfdc',
-                                  font=('Modern', 30),
+                                  image = sign,
+                                  bg='#eac398',
                                   command=when_signup_clicked)
-        signup_button.place(x=176, y=335)
+        signup_button.image = sign
+        signup_button.place(x=225, y=270)
         username = tk.Entry(self, bg='white', fg='black')
-        username.place(x=150, y=120)
+        username.place(x=150, y=170, width=285)
 
         password = tk.Entry(self, bg='white', fg='black')
-        password.place(x=150, y=200)
+        password.place(x=150, y=225, width=270)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
-                                command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width=34)
+        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_button = tk.Button(self, image=back_img,
+                                command=lambda: controller.show_frame(FirstPage), bg="#eac398")
+        back_button.img = back_img
+        back_button.place(x=40, y=65, height = 30)
 
-        user = tk.Label(self, text="user:")
-        user.place(x=100, y=120)
-
-        passy = tk.Label(self, text="pass:")
-        passy.place(x=100, y=200)
 
 
 class LoginPage(tk.Frame):
@@ -533,7 +553,7 @@ class LoginPage(tk.Frame):
                     user_pass.append(row)
                 print(user_pass)
 
-        bg = PhotoImage(file="pictures/signupbg.png")
+        bg = PhotoImage(file="pictures/loginbg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
@@ -571,28 +591,25 @@ class LoginPage(tk.Frame):
         def verify_login():
             return login_status
 
+        log = PhotoImage(file="pictures/loginbutton.png")
         login_button = tk.Button(self,
-                                 text='Log in',
-                                 bg='#52bfdc',
-                                 font=('Modern', 30),
+                                 image = log,
+                                 bg='#eac398',
                                  command=when_signup_clicked)
-        login_button.place(x=176, y=335)
+        login_button.image = log
+        login_button.place(x=225, y=270)
 
         username = tk.Entry(self, bg='white', fg='black')
-        username.place(x=150, y=120)
+        username.place(x=150, y=170, width=285)
 
         password = tk.Entry(self, bg='white', fg='black')
-        password.place(x=150, y=200)
+        password.place(x=150, y=225, width=285)
 
-        user = tk.Label(self, text="user:")
-        user.place(x=100, y=120)
-
-        passy = tk.Label(self, text="pass:")
-        passy.place(x=100, y=200)
-
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
-                                command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width=34)
+        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_button = tk.Button(self, image=back_img,
+                                command=lambda: controller.show_frame(FirstPage), bg="#eac398")
+        back_button.img = back_img
+        back_button.place(x=40, y=65, height = 30)
 
 
 class ProfilePage(tk.Frame):
@@ -600,28 +617,21 @@ class ProfilePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/profilepage.png")
+        bg = PhotoImage(file="pictures/newprofilebg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
 
-        pfp = PhotoImage(file="pictures/NEWAMONGUS.png")
-        pfplabel = Label(self, image=pfp)
-        pfplabel.image = pfp
-        pfplabel.place(x=60, y=100)
 
-        username = Label(self, text=(f"hello"), fg='white', bg="#006994", font=("Montserrat 20 bold"))
-        username.place(x=200, y=120)
 
-        event_button = Button(self, text="New Event")
-        event_button.place(x=80, y=300)
+        event_button = Button(self, text="Customize", font="Arial 12")
+        event_button.place(x=209, y=300)
 
-        review_button = Button(self, text="Leave Review")
-        review_button.place(x=260, y=300)
-
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
-                                command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width=34)
+        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_button = tk.Button(self, image=back_img,
+                                command=lambda: controller.show_frame(FirstPage), bg="#eac398")
+        back_button.img = back_img
+        back_button.place(x=40, y=65, height=30)
 
 # Driver Code
 app = tkinterApp()
