@@ -83,7 +83,7 @@ class FirstPage(tk.Frame):
 
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/homepagebg.png")
+        bg = PhotoImage(file="QHacks/pictures/homepagebg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
@@ -92,7 +92,7 @@ class FirstPage(tk.Frame):
 
         global i
 
-        account_img = PhotoImage(file="pictures/accountbutton.png")
+        account_img = PhotoImage(file="QHacks/pictures/accountbutton.png")
 
         account_btn = tk.Button(self, image=account_img, bg='#eac398',
                                 command=lambda: controller.show_frame(test(i)))
@@ -108,7 +108,7 @@ class FirstPage(tk.Frame):
         search_bar.bind("<Return>", lambda event: show_details_of_event(search_bar.get()))
         search_bar.delete(0, tk.END)
 
-        dice = PhotoImage(file="pictures/dice.png")
+        dice = PhotoImage(file="QHacks/pictures/dice.png")
         new_dice = dice.subsample(10, 10)
 
         def random_generator():
@@ -203,11 +203,6 @@ class FirstPage(tk.Frame):
             canvas = Canvas(events_frame)
             scrollbar = ttk.Scrollbar(events_frame, orient="vertical", command=canvas.yview)
             scrollable_frame = Frame(canvas)
-
-            bg = PhotoImage(file="pictures/eventspage.png")
-            bglabel = Label(self, image=bg)
-            bglabel.image = bg
-            bglabel.place(x=0, y=0)
 
             scrollable_frame.bind(
                 "<Configure>",
@@ -398,17 +393,17 @@ class FirstPage(tk.Frame):
 
         # Buttons for events, calendar, and view events
 
-        calendar = PhotoImage(file = "pictures/calendarbutton.png")
+        calendar = PhotoImage(file = "QHacks/pictures/calendarbutton.png")
         calendar_btn = Button(self, image= calendar, bg="#eac398", command=calendar_page)
         calendar_btn.image = calendar
         calendar_btn.place(x=205, y=320, width=100, height=100)
 
-        plus = PhotoImage(file = "pictures/addbutton.png")
+        plus = PhotoImage(file = "QHacks/pictures/addbutton.png")
         add_events_btn = Button(self, image=plus, bg="#eac398", command=add_event_page)
         add_events_btn.image = plus
         add_events_btn.place(x=70, y=320, width=100, height=100)
 
-        lst = PhotoImage(file = "pictures/listbutton.png")
+        lst = PhotoImage(file = "QHacks/pictures/listbutton.png")
         events_btn = Button(self, image=lst, bg="#eac398", command=show_events_page)
         events_btn.image = lst
 
@@ -419,18 +414,18 @@ class AccountPages(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/loginsignupbg.png")
+        bg = PhotoImage(file="QHacks/pictures/loginsignupbg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
 
-        sign = PhotoImage(file="pictures/signupbutton.png")
+        sign = PhotoImage(file="QHacks/pictures/signupbutton.png")
         signup_button = tk.Button(self, command=lambda: controller.show_frame(SignUpPage),
                                   bg='#eac398',image=sign)
         signup_button.image = sign
         signup_button.place(x=80, y=235, height=100, width=150)
 
-        log = PhotoImage(file="pictures/loginbutton.png")
+        log = PhotoImage(file="QHacks/pictures/loginbutton.png")
         login_button = tk.Button(self,
                                  bg='#eac398',
                                  image=log,
@@ -439,7 +434,7 @@ class AccountPages(tk.Frame):
         login_button.place(x=275, y=235, height=100, width=150)
 
 
-        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_img = PhotoImage(file="QHacks/pictures/backbutton.png")
         back_button = tk.Button(self, image=back_img,
                                 command=lambda: controller.show_frame(FirstPage), bg="#eac398")
         back_button.img = back_img
@@ -486,7 +481,7 @@ class SignUpPage(tk.Frame):
                 print("success")
                 return 2
 
-        bg = PhotoImage(file="pictures/signupbg.png")
+        bg = PhotoImage(file="QHacks/pictures/signupbg.png")
 
         bglabel = Label(self, image=bg)
         bglabel.image = bg
@@ -516,7 +511,7 @@ class SignUpPage(tk.Frame):
                 self.after(1, lambda: controller.show_frame(FirstPage))
 
 
-        sign = PhotoImage(file="pictures/signupbutton.png")
+        sign = PhotoImage(file="QHacks/pictures/signupbutton.png")
         signup_button = tk.Button(self,
                                   text='Sign Up',
                                   image = sign,
@@ -530,7 +525,7 @@ class SignUpPage(tk.Frame):
         password = tk.Entry(self, bg='white', fg='black')
         password.place(x=150, y=225, width=270)
 
-        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_img = PhotoImage(file="QHacks/pictures/backbutton.png")
         back_button = tk.Button(self, image=back_img,
                                 command=lambda: controller.show_frame(FirstPage), bg="#eac398")
         back_button.img = back_img
@@ -553,7 +548,7 @@ class LoginPage(tk.Frame):
                     user_pass.append(row)
                 print(user_pass)
 
-        bg = PhotoImage(file="pictures/loginbg.png")
+        bg = PhotoImage(file="QHacks/pictures/loginbg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
@@ -591,7 +586,7 @@ class LoginPage(tk.Frame):
         def verify_login():
             return login_status
 
-        log = PhotoImage(file="pictures/loginbutton.png")
+        log = PhotoImage(file="QHacks/pictures/loginbutton.png")
         login_button = tk.Button(self,
                                  image = log,
                                  bg='#eac398',
@@ -605,7 +600,7 @@ class LoginPage(tk.Frame):
         password = tk.Entry(self, bg='white', fg='black')
         password.place(x=150, y=225, width=285)
 
-        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_img = PhotoImage(file="QHacks/pictures/backbutton.png")
         back_button = tk.Button(self, image=back_img,
                                 command=lambda: controller.show_frame(FirstPage), bg="#eac398")
         back_button.img = back_img
@@ -617,7 +612,7 @@ class ProfilePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/newprofilebg.png")
+        bg = PhotoImage(file="QHacks/pictures/newprofilebg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
@@ -627,7 +622,7 @@ class ProfilePage(tk.Frame):
         event_button = Button(self, text="Customize", font="Arial 12")
         event_button.place(x=209, y=300)
 
-        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_img = PhotoImage(file="QHacks/pictures/backbutton.png")
         back_button = tk.Button(self, image=back_img,
                                 command=lambda: controller.show_frame(FirstPage), bg="#eac398")
         back_button.img = back_img
