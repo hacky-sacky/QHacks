@@ -87,6 +87,61 @@ def calendar_page():
 
     Button(calendar_window, text="View Events", command=get_events).pack(pady=20)
 
+def show_events_page():
+    """
+    This function displays the 'Events' page with all the events added
+    by users.
+    Reads the `events_by_date.txt` file and shows all events.
+    """
+    events_window = Toplevel(root)
+    events_window.title("All Events")
+    events_window.geometry("600x600")
+
+    header_label = Label(events_window, text="All Events", font=("Arial", 18, "bold"))
+    header_label.pack(pady=10)
+
+    # Scrollable Frame
+    events_frame = Frame(events_window)
+    events_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+    canvas = Canvas(events_frame)
+    scrollbar = ttk.Scrollbar(events_frame, orient="vertical", command=canvas.yview)
+    scrollable_frame = Frame(canvas)
+
+    scrollable_frame.bind(
+        "<Configure>",
+        lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+    )
+
+    canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+    canvas.configure(yscrollcommand=scrollbar.set)
+
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    # Read and display events
+    events_found = False
+
+    if os.path.exists(events_file):
+        with open(events_file, "r") as file:
+            for line in file:
+                # Ensure the line is valid
+                if "|" in line:
+                    date, title, time, description, location, event_type = line.strip().split("|")
+                    events_found = True
+
+                    # Event Display
+                    event_box = Frame(scrollable_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                    event_box.pack(fill="x", pady=5)
+
+                    Label(event_box, text=title, font=("Arial", 14, "bold")).pack(anchor="w")
+                    Label(event_box, text=f"Date: {date} | Type: {event_type}", font=("Arial", 12)).pack(anchor="w")
+                    Label(event_box, text=f"Time: {time} | Location: {location}", font=("Arial", 12)).pack(anchor="w")
+                    Label(event_box, text=description, font=("Arial", 12, "italic")).pack(anchor="w", pady=5)
+
+    if not events_found:
+        Label(scrollable_frame, text="No events found.", font=("Arial", 14)).pack(pady=20)
+
 def add_event_page():
     def save_event():
         title = title_entry.get()
@@ -164,5 +219,7 @@ def add_event_page():
 
 Button(root, text="Add New Event", command=add_event_page, width=20).pack(pady=20)
 Button(root, text="View Calendar", command=calendar_page, width=20).pack(pady=20)
+Button(root, text="View Events", command=show_events_page, width=20).pack(pady=20)
+
 
 root.mainloop()
