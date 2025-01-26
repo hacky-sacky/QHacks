@@ -1,32 +1,29 @@
 import tkinter as tk
 from tkinter import ttk
 from tkinter import *
-import socket
 
 import csv
 import os
 from tkinter import font
 
-#global variables
 
-#T/F for if login or not
+# global variables
+
+# T/F for if login or not
 i = 0
 
+user = 'dsadsa'
 
 LARGEFONT = ("Verdana", 35)
-
-
 class tkinterApp(tk.Tk):
 
     # __init__ function for class tkinterApp
 
-    #self it like self  (self = tk.Tk())
+    # self it like self  (self = tk.Tk())
 
     def __init__(self, *args, **kwargs):
-
         # __init__ function for class Tk
         tk.Tk.__init__(self, *args, **kwargs)
-
 
         self.geometry("500x500")
         self.resizable(False, False)
@@ -45,7 +42,6 @@ class tkinterApp(tk.Tk):
         # iterating through a tuple consisting
         # of the different page layouts
         for F in (FirstPage, AddEventPage, AccountPages, SignUpPage, LoginPage, ProfilePage, EventsPage):
-            print(self.frames)
 
             frame = F(container, self)
 
@@ -61,6 +57,7 @@ class tkinterApp(tk.Tk):
     # to display the current frame passed as
     # parameter
     def show_frame(self, cont):
+
         frame = self.frames[cont]
         frame.tkraise()
 
@@ -68,21 +65,16 @@ class tkinterApp(tk.Tk):
 
 def test(num):
     if num == 1:
-       return ProfilePage
+        return ProfilePage
     else:
-       return AccountPages
+        return AccountPages
 
-def send_info(information):
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client.connect(("10.216.133.33", 5050))
+'''def return_user():
 
-    print(client.recv(1024).decode())
-    client.send(information.encode())
-
+    return user'''
 
 # first window frame startpage
 class FirstPage(tk.Frame):
-
 
     def __init__(self, parent, controller):
 
@@ -93,22 +85,19 @@ class FirstPage(tk.Frame):
         bglabel.image = bg
         bglabel.place(x=0, y=0)
 
-
-
-        thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'), command= lambda: controller.show_frame(EventsPage))
+        thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'),
+                                    command=lambda: controller.show_frame(EventsPage))
         thing_to_do_btn.place(x=30, y=10, height=30, width=125)
 
         chat_wt_ppl_btn = tk.Button(self, text='Chat With People', bg='light grey', font=('Arial 10 bold'))
         chat_wt_ppl_btn.place(x=187.5, y=10, height=30, width=125)
 
-
         global i
 
-
-        account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold', command= lambda: controller.show_frame(test(i)))
+        account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold',
+                                command=lambda: controller.show_frame(test(i)))
         account_btn.place(x=337.5, y=10, height=30, width=125)
         print(f'also {i}')
-
 
         underlined_font = font.Font(family="Arial", size=12, underline=True)
         # height = 15 pixels
@@ -166,15 +155,16 @@ class FirstPage(tk.Frame):
         try_smth_new_txt = tk.Label(self, text='try something new ...', bg='grey', fg='blue', font=underlined_font)
         try_smth_new_txt.place(x=150, y=200, height=25, width=150)
 
-        add_button = tk.Button(self, text= '+', font=('Arial 15 bold'), command= lambda: controller.show_frame(AddEventPage))
-        add_button.place(x=430, y= 160, height=20, width=20)
+        add_button = tk.Button(self, text='+', font=('Arial 15 bold'),
+                               command=lambda: controller.show_frame(AddEventPage))
+        add_button.place(x=430, y=160, height=20, width=20)
+
 
 
 
 
 class AddEventPage(tk.Frame):
     def __init__(self, parent, controller):
-
 
         tk.Frame.__init__(self, parent)
 
@@ -196,18 +186,14 @@ class AddEventPage(tk.Frame):
             event_type = type_var.get()
 
             if all([title, date, start_time, end_time, description, location, event_type]):
-                send_info(f"{title}|{date}|{start_time}-{end_time}|{description}|{location}|{event_type}\n")
                 with open(events_file, "a") as file:
                     file.write(f"{title}|{date}|{start_time}-{end_time}|{description}|{location}|{event_type}\n")
 
-                result_label.config(text=f"Event '{title}' added successfully!", fg="green")
                 clear_form()
-                self.after(2000, lambda: controller.show_frame(FirstPage))
-                result_label.destroy()
+                self.after(2, lambda: controller.show_frame(FirstPage))
+
             else:
                 result_label.config(text="Please fill out all fields.", fg="red")
-                result_label.place(x=170, y=450)
-
 
         def clear_form():
             """
@@ -224,37 +210,106 @@ class AddEventPage(tk.Frame):
             type_var.set("")
 
         def show_event_details(event):
-            details_window = tk.Toplevel(self)
-            details_window.title("Event Details")
-            details_window.geometry("600x600")
+            """
+            Shows the event details on a separate page after clicking the
+            view button on the events from the 'Events Page'. Uses the same
+            GUI as the 'Add Event Form'.
+            """
+            self = tk.Toplevel(self)
+            self.title("Event Details")
+            self.geometry("600x600")
 
-            header_label = tk.Label(details_window, text="Event Details", font=("Montserrat", 18, "bold"))
+            header_label = tk.Label(self, text="Event Details", font=("Montserrat", 18, "bold"))
             header_label.pack(pady=20)
 
-            title_label = tk.Label(details_window, text=f"Title: {event['title']}", font=("Montserrat", 14))
+            title_label = tk.Label(self, text=f"Title: {event['title']}", font=("Montserrat", 14))
             title_label.pack(anchor="w", padx=20, pady=5)
 
-            date_label = tk.Label(details_window, text=f"Date: {event['date']}", font=("Montserrat", 14))
+            date_label = tk.Label(self, text=f"Date: {event['date']}", font=("Montserrat", 14))
             date_label.pack(anchor="w", padx=20, pady=5)
 
-            time_label = tk.Label(details_window, text=f"Time: {event['time']}", font=("Montserrat", 14))
+            time_label = tk.Label(self, text=f"Time: {event['time']}", font=("Montserrat", 14))
             time_label.pack(anchor="w", padx=20, pady=5)
 
-            description_label = tk.Label(details_window, text=f"Description: {event['description']}",
+            description_label = tk.Label(self, text=f"Description: {event['description']}",
                                          font=("Montserrat", 14), wraplength=500, justify="left")
             description_label.pack(anchor="w", padx=20, pady=5)
 
-            location_label = tk.Label(details_window, text=f"Location: {event['location']}", font=("Montserrat", 14))
+            location_label = tk.Label(self, text=f"Location: {event['location']}", font=("Montserrat", 14))
             location_label.pack(anchor="w", padx=20, pady=5)
 
-            type_label = tk.Label(details_window, text=f"Type: {event['type']}", font=("Montserrat", 14))
+            type_label = tk.Label(self, text=f"Type: {event['type']}", font=("Montserrat", 14))
             type_label.pack(anchor="w", padx=20, pady=5)
 
+        # IMPORTANT: LINK THIS FUNCTION TO 'THINGS TO DO' BUTTON
+        def show_events_page():
+            """
+            This function displays the 'Events' page with all the events added
+            by users.
+            This function reads the txt file that was created and creates a list
+            of all data entries and puts them in a label which is ultimately
+            displayed on the 'Events' page.
+            Each event has a view button that takes the user to a separate page
+            with all the proper details listed for the public to see.
+            If there are no events added and a user goes on this page, it says
+            'No events added'.
+            """
+            events_window = tk.Toplevel(self)
+            events_window.title("Events")
+            events_window.geometry("600x600")
+
+            header_label = tk.Label(events_window, text="Events", font=("Montserrat", 18, "bold"))
+            header_label.pack(pady=20)
+
+            scroll_frame = tk.Frame(events_window)
+            scroll_frame.pack(fill="both", expand=True)
+
+            canvas = tk.Canvas(scroll_frame)
+            scrollbar = ttk.Scrollbar(scroll_frame, orient="vertical", command=canvas.yview)
+            scrollbar.pack(side="right", fill="y")
+
+            canvas.pack(side="left", fill="both", expand=True)
+            canvas.configure(yscrollcommand=scrollbar.set)
+
+            events_frame = tk.Frame(canvas)
+            canvas.create_window((0, 0), window=events_frame, anchor="nw")
+
+            def on_frame_configure(event):
+                canvas.configure(scrollregion=canvas.bbox("all"))
+
+            events_frame.bind("<Configure>", on_frame_configure)
+
+            if os.path.exists(events_file):
+                with open(events_file, "r") as file:
+                    for line in file:
+                        title, date, time, description, location, event_type = line.strip().split("|")
+                        event = {
+                            "title": title,
+                            "date": date,
+                            "time": time,
+                            "description": description,
+                            "location": location,
+                            "type": event_type
+                        }
+
+                        event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                        event_box.pack(fill="x", pady=5)
+
+                        event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
+                        event_title.pack(anchor="w")
+
+                        event_details = tk.Label(event_box,
+                                                 text=f"Event type: {event_type} | Time: {time} | Location: {location}",
+                                                 font=("Montserrat", 12))
+                        event_details.pack(anchor="w")
+
+                        view_button = ttk.Button(event_box, text="View", command=lambda e=event: show_event_details(e))
+                        view_button.pack(anchor="e", pady=5)
+            else:
+                no_events_label = tk.Label(events_frame, text="No events added yet.", font=("Montserrat", 14))
+                no_events_label.pack(pady=20)
 
 
-        # Create a header
-        header_label = tk.Label(self, text="Add New Event", font=("Montserrat", 18, "bold"))
-        header_label.pack(pady=20)
 
         # Create a frame for the form
         form_frame = tk.Frame(self)
@@ -268,7 +323,7 @@ class AddEventPage(tk.Frame):
         title_entry.grid(row=0, column=1, pady=5)
 
         # Date
-        date_label = tk.Label(form_frame, text="Date (MM-DD-YYYY):", font=("Montserrat", 12))
+        date_label = tk.Label(form_frame, text="Date (YYYY-MM-DD):", font=("Montserrat", 12))
         date_label.grid(row=1, column=0, sticky="w", pady=5)
         date_var = tk.StringVar()
         date_entry = ttk.Entry(form_frame, textvariable=date_var, font=("Montserrat", 12), width=40)
@@ -311,14 +366,11 @@ class AddEventPage(tk.Frame):
         type_dropdown.grid(row=6, column=1, pady=5)
 
         submit_button = ttk.Button(self, text="Submit", command=submit_event)
-        submit_button.place(x=170, y=400)
-
-        cancel_button = ttk.Button(self, text="Cancel", command=lambda: controller.show_frame(FirstPage))
-        cancel_button.place(x=270, y=400)
-
+        submit_button.pack(pady=10)
 
         result_label = tk.Label(self, text="", font=("Montserrat", 12))
         result_label.pack(pady=10)
+
 
 
 class AccountPages(tk.Frame):
@@ -330,28 +382,28 @@ class AccountPages(tk.Frame):
         bglabel.image = bg
         bglabel.place(x=0, y=0)
 
-        signup_button = tk.Button(self, command= lambda: controller.show_frame(SignUpPage),
+        signup_button = tk.Button(self, command=lambda: controller.show_frame(SignUpPage),
                                   text='Sign Up',
                                   bg='light blue',
                                   font=('Arial 30 bold'))
-        signup_button.place(x=160, y=70, height= 100, width= 200)
+        signup_button.place(x=160, y=70, height=100, width=200)
 
         login_button = tk.Button(self,
                                  text='Log In',
                                  bg='light blue',
                                  font=('Arial 30 bold'),
-                                 command= lambda: controller.show_frame(LoginPage))
-        login_button.place(x=160, y=270, height= 100, width = 200)
+                                 command=lambda: controller.show_frame(LoginPage))
+        login_button.place(x=160, y=270, height=100, width=200)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width = 34)
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
+                                command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width=34)
 
 
 class SignUpPage(tk.Frame):
     def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
-
 
         login_status = False
         user_pass = []
@@ -387,7 +439,6 @@ class SignUpPage(tk.Frame):
                 print("success")
                 return 2
 
-
         bg = PhotoImage(file="pictures/signupbg.png")
 
         bglabel = Label(self, image=bg)
@@ -411,6 +462,10 @@ class SignUpPage(tk.Frame):
             else:
                 global i
                 i = 1
+
+                global user
+                user = "Andy"
+
                 self.after(1, lambda: controller.show_frame(FirstPage))
 
         signup_button = tk.Button(self,
@@ -425,8 +480,9 @@ class SignUpPage(tk.Frame):
         password = tk.Entry(self, bg='white', fg='black')
         password.place(x=150, y=200)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width = 34)
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
+                                command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width=34)
 
         user = tk.Label(self, text="user:")
         user.place(x=100, y=120)
@@ -463,7 +519,7 @@ class LoginPage(tk.Frame):
                     login_status = True
                     return 1
             return 0
-        
+
         def when_signup_clicked():
             global input_username
             global input_password
@@ -477,12 +533,13 @@ class LoginPage(tk.Frame):
                 error.place(x=200, y=280)
             else:
                 global i
-
                 i = 1
+
+                global user
+                user = "Andy"
+
+
                 self.after(1, lambda: controller.show_frame(FirstPage))
-
-
-
 
         def verify_login():
             return login_status
@@ -506,15 +563,14 @@ class LoginPage(tk.Frame):
         passy = tk.Label(self, text="pass:")
         passy.place(x=100, y=200)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width = 34)
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
+                                command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width=34)
 
 
 class ProfilePage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
-
 
         bg = PhotoImage(file="pictures/signupbg.png")
         bglabel = Label(self, image=bg)
@@ -526,22 +582,30 @@ class ProfilePage(tk.Frame):
         pfplabel.image = pfp
         pfplabel.place(x=100, y=100)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width = 34)
+        print('jfdsklds' + user)
+        label = Label(self, text=i , font="Montserrat 15 bold")
+        label.pack()
+
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
+                                command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width=34)
 
 
 
 class EventsPage(tk.Frame):
     def __init__(self, parent, controller):
+
         tk.Frame.__init__(self, parent)
 
-        events_file = "events.txt"
+
 
         def show_event_details(event):
-            details_window = tk.Toplevel(self)
-            details_window.title("Event Details")
-            details_window.geometry("600x600")
-
+            """
+            Shows the event details on a separate page after clicking the
+            view button on the events from the 'Events Page'. Uses the same
+            GUI as the 'Add Event Form'.
+            """
+            details_window = self
             header_label = tk.Label(details_window, text="Event Details", font=("Montserrat", 18, "bold"))
             header_label.pack(pady=20)
 
@@ -565,70 +629,76 @@ class EventsPage(tk.Frame):
             type_label.pack(anchor="w", padx=20, pady=5)
 
         """
-        This function displays the 'Events' page with all the events added
-        by users.
-        This function reads the txt file that was created and creates a list
-        of all data entries and puts them in a label which is ultimately
-        displayed on the 'Events' page.
-        Each event has a view button that takes the user to a separate page
-        with all the proper details listed for the public to see.
-        If there are no events added and a user goes on this page, it says
-        'No events added'.
-        """
+            This function displays the 'Events' page with all the events added
+            by users.
+            This function reads the txt file that was created and creates a list
+            of all data entries and puts them in a label which is ultimately
+            displayed on the 'Events' page.
+            Each event has a view button that takes the user to a separate page
+            with all the proper details listed for the public to see.
+            If there are no events added and a user goes on this page, it says
+            'No events added'.
+            """
+        events_window = self
 
-        header_label = tk.Label(self, text="Events", font=("Montserrat", 18, "bold"))
+        header_label = tk.Label(events_window, text="Events", font=("Montserrat", 18, "bold"))
         header_label.pack(pady=20)
 
-        events_frame = tk.Frame(self)
-        events_frame.pack(pady=10, padx=20, fill="both", expand=True)
+        scroll_frame = tk.Frame(events_window)
+        scroll_frame.pack(fill="both", expand=True)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"), command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width = 34)
+        canvas = tk.Canvas(scroll_frame)
+        scrollbar = ttk.Scrollbar(scroll_frame, orient="vertical", command=canvas.yview)
+        scrollbar.pack(side="right", fill="y")
 
-        #bounds for displaying the events
-        lower = 0
-        upper = 2
+        canvas.pack(side="left", fill="both", expand=True)
+        canvas.configure(yscrollcommand=scrollbar.set)
+
+        events_frame = tk.Frame(canvas)
+        canvas.create_window((0, 0), window=events_frame, anchor="nw")
+
+        def on_frame_configure(event):
+            canvas.configure(scrollregion=canvas.bbox("all"))
+
+        events_frame.bind("<Configure>", on_frame_configure)
+
+
+        events_file = 'events.txt'
 
         if os.path.exists(events_file):
             with open(events_file, "r") as file:
-                for i,line in enumerate(file):
-                    if lower<=i<=upper:
+                for line in file:
+                    title, date, time, description, location, event_type = line.strip().split("|")
+                    event = {
+                        "title": title,
+                        "date": date,
+                        "time": time,
+                        "description": description,
+                        "location": location,
+                        "type": event_type
+                    }
 
-                        title, date, time, description, location, event_type = line.strip().split("|")
-                        event = {
-                            "title": title,
-                            "date": date,
-                            "time": time,
-                            "description": description,
-                            "location": location,
-                            "type": event_type
-                        }
+                    event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                    event_box.pack(fill="x", pady=5)
 
-                        event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
-                        event_box.pack(fill="x", pady=5)
+                    event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
+                    event_title.pack(anchor="w")
 
-                        event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
-                        event_title.pack(anchor="w")
+                    event_details = tk.Label(event_box,
+                                             text=f"Event type: {event_type} | Time: {time} | Location: {location}",
+                                             font=("Montserrat", 12))
+                    event_details.pack(anchor="w")
 
-                        event_details = tk.Label(event_box,
-                                                 text=f"Event type: {event_type} | Time: {time} | Location: {location}",
-                                                 font=("Montserrat", 12))
-                        event_details.pack(anchor="w")
-
-                        view_button = ttk.Button(event_box, text="View", command=lambda e=event: show_event_details(e))
-                        view_button.pack(anchor="e", pady=5)
-
-                        view_button = tk.Button(self, text="next page")
-                        view_button.pack(anchor="e", pady=5)
-
-
-
+                    view_button = ttk.Button(event_box, text="View", command=lambda e=event: show_event_details(e))
+                    view_button.pack(anchor="e", pady=5)
         else:
             no_events_label = tk.Label(events_frame, text="No events added yet.", font=("Montserrat", 14))
             no_events_label.pack(pady=20)
 
 
-
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
+                                command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width=34)
 
 # Driver Code
 app = tkinterApp()
