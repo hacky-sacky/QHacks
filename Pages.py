@@ -1,11 +1,14 @@
 import tkinter as tk
+from calendar import calendar
 from tkinter import ttk
 from tkinter import *
+from PIL import Image, ImageTk
 
 import csv
 import os
 from tkinter import font
 
+from pygame.examples.cursors import image
 from tkcalendar import Calendar
 
 # global variables
@@ -42,7 +45,7 @@ class tkinterApp(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (FirstPage, AccountPages, SignUpPage, LoginPage, ProfilePage, EventsPage):
+        for F in (FirstPage, AccountPages, SignUpPage, LoginPage, ProfilePage):
 
             frame = F(container, self)
 
@@ -81,27 +84,21 @@ class FirstPage(tk.Frame):
 
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/homepage.png")
+        bg = PhotoImage(file="pictures/homepagebg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
 
-        thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'),
-                                    command=lambda: controller.show_frame(EventsPage))
-        thing_to_do_btn.place(x=30, y=360, height=30, width=125)
 
-        chat_wt_ppl_btn = tk.Button(self, text='Chat With People', bg='light grey', font=('Arial 10 bold'))
-        chat_wt_ppl_btn.place(x=187.5, y=360, height=30, width=125)
 
         global i
 
-        canvas = tk.Canvas(self, width=400, height=100, bg='#3C6E47', bd=0, highlightthickness=0)
-        canvas.create_text(200, 50, text="Active Kingston", font='Helvetica 38 bold', fill='#FFB300')
-        canvas.place(x=50, y=20)
+        account_img = PhotoImage(file="pictures/accountbutton.png")
 
-        account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold',
+        account_btn = tk.Button(self, image=account_img, bg='#eac398',
                                 command=lambda: controller.show_frame(test(i)))
-        account_btn.place(x=337.5, y=360, height=30, width=125)
+        account_btn.image = account_img
+        account_btn.place(x=415, y=65, height=50, width=50)
         print(f'also {i}')
 
         underlined_font = font.Font(family="Arial", size=12, underline=True)
@@ -158,26 +155,6 @@ class FirstPage(tk.Frame):
                             search_bar.delete(0, tk.END)
                             return
 
-    '''    search_bar = tk.Entry(self, font=('Arial 15 bold'))
-        search_bar.place(x=50, y=200, height=50, width=400)
-        search_bar.bind("<Return>", lambda event: show_details_of_event(search_bar.get()))
-        search_bar.delete(0, tk.END)'''
-
-
-
-
-
-
-
-class EventsPage(tk.Frame):
-    def __init__(self, parent, controller):
-
-        tk.Frame.__init__(self, parent)
-
-        bg = PhotoImage(file="pictures/eventspage.png")
-        bglabel = Label(self, image=bg)
-        bglabel.image = bg
-        bglabel.place(x=0, y=0)
 
         events_file = "events_by_date.txt"
 
@@ -196,7 +173,6 @@ class EventsPage(tk.Frame):
             events_window = Toplevel(self)
             events_window.title(f"Events on {formatted_date}")
             events_window.geometry("600x600")
-
 
             header_label = Label(events_window, text=f"Events on {formatted_date}", font=("Arial", 16, "bold"))
             header_label.pack(pady=10)
@@ -248,12 +224,12 @@ class EventsPage(tk.Frame):
             Main calendar event page which has all the stored
             events on the particular dates.
             """
+
             calendar_window = Toplevel(self)
             calendar_window.title("Event Calendar")
             calendar_window.geometry("500x500")
 
             Label(calendar_window, text="Select a Date", font=("Arial", 16, "bold")).pack(pady=10)
-
             cal = Calendar(calendar_window, selectmode='day', year=2025, month=1, day=25, showweeknumbers=False)
             cal.pack(pady=20, expand=True, fill=BOTH)
 
@@ -266,7 +242,7 @@ class EventsPage(tk.Frame):
                 selected_date = cal.get_date()
                 show_events_for_date(selected_date)
 
-            Button(calendar_window, text="View Events", relief=SUNKEN, command=get_events).pack(pady=20)
+            Button(calendar_window, text="View Events", command=get_events).pack(pady=20)
 
         def show_events_page():
             """
@@ -274,9 +250,10 @@ class EventsPage(tk.Frame):
             by users.
             Reads the `events_by_date.txt` file and shows all events.
             """
+
             events_window = Toplevel(self)
             events_window.title("All Events")
-            events_window.geometry("600x600")
+            events_window.geometry("500x500")
 
             header_label = Label(events_window, text="All Events", font=("Arial", 18, "bold"))
             header_label.pack(pady=10)
@@ -313,7 +290,7 @@ class EventsPage(tk.Frame):
 
                             # Event Display
                             event_box = Frame(scrollable_frame, borderwidth=1, relief="solid", padx=10, pady=10)
-                            event_box.pack(fill="x", pady=5)
+                            event_box.pack(fill="x", pady=5, anchor="center")
 
                             Label(event_box, text=title, font=("Arial", 14, "bold")).pack(anchor="w")
                             Label(event_box, text=f"Date: {date} | Type: {event_type}", font=("Arial", 12)).pack(
@@ -356,85 +333,98 @@ class EventsPage(tk.Frame):
 
             add_window = Toplevel(self)
             add_window.title("Add New Event")
-            add_window.geometry("600x830")
+            add_window.geometry("500x700")
 
-            Label(add_window, text="Add New Event", font=("Arial", 18, "bold")).pack(pady=10)
+            Label(add_window, text="Add New Event", font=("Arial", 12, "bold")).pack(pady=5)
 
             # Event Title
-            Label(add_window, text="Title:").pack(anchor="w", padx=20, pady=5)
+            Label(add_window, text="Title:").pack(anchor="w", padx=20)
             title_entry = Entry(add_window, width=40)
-            title_entry.pack(padx=20, pady=5)
+            title_entry.pack(padx=20)
 
             # Date Picker
-            Label(add_window, text="Date:").pack(anchor="w", padx=20, pady=5)
+            Label(add_window, text="Date:").pack(anchor="w", padx=20)
             cal = Calendar(add_window, selectmode='day', showweeknumbers=False, font=("Arial", 12), borderwidth=2)
             cal.pack(pady=5)
 
             # Start and End Time
-            Label(add_window, text="Start Time:").pack(anchor="w", padx=20, pady=5)
+            Label(add_window, text="Start Time:").pack(anchor="w", padx=20)
             start_time_entry = Entry(add_window, width=20)
             start_time_entry.pack(padx=20, pady=5)
 
-            Label(add_window, text="End Time:").pack(anchor="w", padx=20, pady=5)
+            Label(add_window, text="End Time:").pack(anchor="w", padx=20)
             end_time_entry = Entry(add_window, width=20)
             end_time_entry.pack(padx=20, pady=5)
 
             # Description
-            Label(add_window, text="Description:").pack(anchor="w", padx=20, pady=5)
+            Label(add_window, text="Description:").pack(anchor="w", padx=20)
             description_text = Text(add_window, height=5, width=50)
             description_text.pack(padx=20, pady=5)
 
             # Location
-            Label(add_window, text="Location:").pack(anchor="w", padx=20, pady=5)
+            Label(add_window, text="Location:").pack(anchor="w", padx=20)
             location_entry = Entry(add_window, width=40)
-            location_entry.pack(padx=20, pady=5)
+            location_entry.pack(padx=20)
 
-            Label(add_window, text="Type:").pack(anchor="w", padx=20, pady=5)
+            Label(add_window, text="Type:").pack(anchor="w", padx=20)
             event_type_var = StringVar()
             event_type_dropdown = ttk.Combobox(add_window, textvariable=event_type_var,
                                                values=["Sports", "Food", "Entertainment", "Shopping", "Study"])
-            event_type_dropdown.pack(padx=20, pady=5)
+            event_type_dropdown.pack(padx=20)
 
             error_label = Label(add_window, text="", font=("Arial", 12))
             error_label.pack(pady=10)
-            Button(add_window, text="Save Event", command=save_event).pack(pady=10)
+            Button(add_window, text="Save Event", command=save_event).pack()
 
-            Button(add_window, text="View Calendar", command=calendar_page).pack(pady=20)
+        # Buttons for events, calendar, and view events
 
-        Button(self, text="Add New Event", relief = RAISED,command=add_event_page, width=20).pack(pady=20)
-        Button(self, text="View Calendar", relief = RAISED,command=calendar_page, width=20).pack(pady=20)
-        Button(self, text="View Events", relief=RAISED, command=show_events_page, width=20).pack(pady=20)
+        calendar = PhotoImage(file = "pictures/calendarbutton.png")
+        calendar_btn = Button(self, image= calendar, bg="#eac398", command=calendar_page)
+        calendar_btn.image = calendar
+        calendar_btn.place(x=205, y=320, width=100, height=100)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
-                                command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width=34)
+        plus = PhotoImage(file = "pictures/addbutton.png")
+        add_events_btn = Button(self, image=plus, bg="#eac398", command=add_event_page)
+        add_events_btn.image = plus
+        add_events_btn.place(x=70, y=320, width=100, height=100)
+
+        lst = PhotoImage(file = "pictures/listbutton.png")
+        events_btn = Button(self, image=lst, bg="#eac398", command=show_events_page)
+        events_btn.image = lst
+
+        events_btn.place(x=340, y=320, width=100, height=100)
 
 
 class AccountPages(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/signupbg.png")
+        bg = PhotoImage(file="pictures/loginsignupbg.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
 
+        sign = PhotoImage(file="pictures/signupbutton.png")
         signup_button = tk.Button(self, command=lambda: controller.show_frame(SignUpPage),
-                                  text='Sign Up',
-                                  bg='light blue',
-                                  font=('Arial 30 bold'))
-        signup_button.place(x=160, y=70, height=100, width=200)
+                                  bg='#eac398',image=sign)
+        signup_button.image = sign
+        signup_button.place(x=80, y=235, height=100, width=150)
 
+        log = PhotoImage(file="pictures/loginbutton.png")
         login_button = tk.Button(self,
-                                 text='Log In',
-                                 bg='light blue',
-                                 font=('Arial 30 bold'),
+                                 bg='#eac398',
+                                 image=log,
                                  command=lambda: controller.show_frame(LoginPage))
-        login_button.place(x=160, y=270, height=100, width=200)
+        login_button.image = log
+        login_button.place(x=275, y=235, height=100, width=150)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
-                                command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width=34)
+
+        back_img = PhotoImage(file="pictures/backbutton.png")
+        back_button = tk.Button(self, image=back_img,
+                                command=lambda: controller.show_frame(FirstPage), bg="#eac398")
+        back_button.img = back_img
+        back_button.place(x=40, y=65, height = 30)
+
 
 
 class SignUpPage(tk.Frame):
