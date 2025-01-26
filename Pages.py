@@ -6,6 +6,7 @@ import csv
 import os
 from tkinter import font
 
+from tkcalendar import Calendar
 
 # global variables
 
@@ -41,7 +42,7 @@ class tkinterApp(tk.Tk):
 
         # iterating through a tuple consisting
         # of the different page layouts
-        for F in (FirstPage, AddEventPage, AccountPages, SignUpPage, LoginPage, ProfilePage, EventsPage):
+        for F in (FirstPage, AccountPages, SignUpPage, LoginPage, ProfilePage, EventsPage):
 
             frame = F(container, self)
 
@@ -87,23 +88,28 @@ class FirstPage(tk.Frame):
 
         thing_to_do_btn = tk.Button(self, text='Things To Do', bg='light grey', font=('Arial 12 bold'),
                                     command=lambda: controller.show_frame(EventsPage))
-        thing_to_do_btn.place(x=30, y=10, height=30, width=125)
+        thing_to_do_btn.place(x=30, y=300, height=30, width=125)
 
         chat_wt_ppl_btn = tk.Button(self, text='Chat With People', bg='light grey', font=('Arial 10 bold'))
-        chat_wt_ppl_btn.place(x=187.5, y=10, height=30, width=125)
+        chat_wt_ppl_btn.place(x=187.5, y=300, height=30, width=125)
 
         global i
 
+        canvas = tk.Canvas(self, width=400, height=100, bg= 'lime green', bd=0, highlightthickness=0)
+        canvas.create_text(200, 50, text="Active Kingston", font='Helvetica 40 bold', fill='gold')
+        canvas.pack()
+
+
         account_btn = tk.Button(self, text='Account', bg='light grey', font='Arial 12 bold',
                                 command=lambda: controller.show_frame(test(i)))
-        account_btn.place(x=337.5, y=10, height=30, width=125)
+        account_btn.place(x=337.5, y=300, height=30, width=125)
         print(f'also {i}')
 
         underlined_font = font.Font(family="Arial", size=12, underline=True)
         # height = 15 pixels
 
         search_bar = tk.Entry(self, font=('Arial 15 bold'))
-        search_bar.place(x=50, y=100, height=50, width=400)
+        search_bar.place(x=50, y=200, height=50, width=400)
         search_bar.bind("<Return>", lambda event: show_details_of_event(search_bar.get()))
         search_bar.delete(0, tk.END)
 
@@ -152,225 +158,238 @@ class FirstPage(tk.Frame):
                             search_bar.delete(0, tk.END)
                             return
 
-        try_smth_new_txt = tk.Label(self, text='try something new ...', bg='grey', fg='blue', font=underlined_font)
-        try_smth_new_txt.place(x=150, y=200, height=25, width=150)
-
-        add_button = tk.Button(self, text='+', font=('Arial 15 bold'),
-                               command=lambda: controller.show_frame(AddEventPage))
-        add_button.place(x=430, y=160, height=20, width=20)
 
 
 
 
 
-class AddEventPage(tk.Frame):
+class EventsPage(tk.Frame):
     def __init__(self, parent, controller):
 
         tk.Frame.__init__(self, parent)
 
-        events_file = "events.txt"
+        events_file = "events_by_date.txt"
 
-        def submit_event():
+        if not os.path.exists(events_file):
+            with open(events_file, "w") as file:
+                pass
+
+        def show_events_for_date(selected_date):
             """
-            This function gets all the data entries from the 'Add New Event' page
-            and checks that if all data entry is 'gotten' (from .get) and appends
-            all data to a txt.file. It also displays a text that the event has been
-            added or not added in case the user didn't fill all the entry fields.
+            This function shows the particular event for a selected
+            date after selecting a date on the calendar then pressing
+            "View Events". Same GUI as main show events page.
             """
-            title = title_var.get()
-            date = date_var.get()
-            start_time = start_time_var.get()
-            end_time = end_time_var.get()
-            description = description_text.get("1.0", tk.END).strip()
-            location = location_var.get()
-            event_type = type_var.get()
-
-            if all([title, date, start_time, end_time, description, location, event_type]):
-                with open(events_file, "a") as file:
-                    file.write(f"{title}|{date}|{start_time}-{end_time}|{description}|{location}|{event_type}\n")
-
-                clear_form()
-                self.after(2, lambda: controller.show_frame(FirstPage))
-
-            else:
-                result_label.config(text="Please fill out all fields.", fg="red")
-
-        def clear_form():
-            """
-            This function clears the form after a user has wrote
-            in all fields of entry and has submitted it. This is
-            called after the user presses the submit button.
-            """
-            title_var.set("")
-            date_var.set("")
-            start_time_var.set("")
-            end_time_var.set("")
-            description_text.delete("1.0", tk.END)
-            location_var.set("")
-            type_var.set("")
-
-        def show_event_details(event):
-            """
-            Shows the event details on a separate page after clicking the
-            view button on the events from the 'Events Page'. Uses the same
-            GUI as the 'Add Event Form'.
-            """
-            self = tk.Toplevel(self)
-            self.title("Event Details")
-            self.geometry("600x600")
-
-            header_label = tk.Label(self, text="Event Details", font=("Montserrat", 18, "bold"))
-            header_label.pack(pady=20)
-
-            title_label = tk.Label(self, text=f"Title: {event['title']}", font=("Montserrat", 14))
-            title_label.pack(anchor="w", padx=20, pady=5)
-
-            date_label = tk.Label(self, text=f"Date: {event['date']}", font=("Montserrat", 14))
-            date_label.pack(anchor="w", padx=20, pady=5)
-
-            time_label = tk.Label(self, text=f"Time: {event['time']}", font=("Montserrat", 14))
-            time_label.pack(anchor="w", padx=20, pady=5)
-
-            description_label = tk.Label(self, text=f"Description: {event['description']}",
-                                         font=("Montserrat", 14), wraplength=500, justify="left")
-            description_label.pack(anchor="w", padx=20, pady=5)
-
-            location_label = tk.Label(self, text=f"Location: {event['location']}", font=("Montserrat", 14))
-            location_label.pack(anchor="w", padx=20, pady=5)
-
-            type_label = tk.Label(self, text=f"Type: {event['type']}", font=("Montserrat", 14))
-            type_label.pack(anchor="w", padx=20, pady=5)
-
-        # IMPORTANT: LINK THIS FUNCTION TO 'THINGS TO DO' BUTTON
-        def show_events_page():
-            """
-            This function displays the 'Events' page with all the events added
-            by users.
-            This function reads the txt file that was created and creates a list
-            of all data entries and puts them in a label which is ultimately
-            displayed on the 'Events' page.
-            Each event has a view button that takes the user to a separate page
-            with all the proper details listed for the public to see.
-            If there are no events added and a user goes on this page, it says
-            'No events added'.
-            """
-            events_window = tk.Toplevel(self)
-            events_window.title("Events")
+            formatted_date = selected_date.lstrip("0").replace("/0", "/")
+            events_window = Toplevel(self)
+            events_window.title(f"Events on {formatted_date}")
             events_window.geometry("600x600")
 
-            header_label = tk.Label(events_window, text="Events", font=("Montserrat", 18, "bold"))
-            header_label.pack(pady=20)
+            header_label = Label(events_window, text=f"Events on {formatted_date}", font=("Arial", 16, "bold"))
+            header_label.pack(pady=10)
 
-            scroll_frame = tk.Frame(events_window)
-            scroll_frame.pack(fill="both", expand=True)
+            events_frame = Frame(events_window)
+            events_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-            canvas = tk.Canvas(scroll_frame)
-            scrollbar = ttk.Scrollbar(scroll_frame, orient="vertical", command=canvas.yview)
-            scrollbar.pack(side="right", fill="y")
+            canvas = Canvas(events_frame)
+            scrollbar = ttk.Scrollbar(events_frame, orient="vertical", command=canvas.yview)
+            scrollable_frame = Frame(canvas)
 
-            canvas.pack(side="left", fill="both", expand=True)
+            scrollable_frame.bind(
+                "<Configure>",
+                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            )
+
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
             canvas.configure(yscrollcommand=scrollbar.set)
 
-            events_frame = tk.Frame(canvas)
-            canvas.create_window((0, 0), window=events_frame, anchor="nw")
+            canvas.pack(side="left", fill="both", expand=True)
+            scrollbar.pack(side="right", fill="y")
 
-            def on_frame_configure(event):
-                canvas.configure(scrollregion=canvas.bbox("all"))
-
-            events_frame.bind("<Configure>", on_frame_configure)
+            events_found = False
 
             if os.path.exists(events_file):
                 with open(events_file, "r") as file:
                     for line in file:
-                        title, date, time, description, location, event_type = line.strip().split("|")
-                        event = {
-                            "title": title,
-                            "date": date,
-                            "time": time,
-                            "description": description,
-                            "location": location,
-                            "type": event_type
-                        }
+                        date, title, time, description, location, event_type = line.strip().split("|")
+                        if date == formatted_date:
+                            events_found = True
+                            event_box = Frame(scrollable_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                            event_box.pack(fill="x", pady=5)
 
-                        event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
-                        event_box.pack(fill="x", pady=5)
+                            Label(event_box, text=title, font=("Arial", 14, "bold")).pack(anchor="w")
+                            Label(event_box, text=f"Type: {event_type} | Time: {time} | Location: {location}",
+                                  font=("Arial", 12)).pack(anchor="w")
+                            Label(event_box, text=description, font=("Arial", 12, "italic")).pack(anchor="w", pady=5)
 
-                        event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
-                        event_title.pack(anchor="w")
+            if not events_found:
+                Label(scrollable_frame, text="No events found on this date.", font=("Arial", 14)).pack(pady=20)
 
-                        event_details = tk.Label(event_box,
-                                                 text=f"Event type: {event_type} | Time: {time} | Location: {location}",
-                                                 font=("Montserrat", 12))
-                        event_details.pack(anchor="w")
+        def calendar_page():
+            """
+            Main calendar event page which has all the stored
+            events on the particular dates.
+            """
+            calendar_window = Toplevel(self)
+            calendar_window.title("Event Calendar")
+            calendar_window.geometry("500x500")
 
-                        view_button = ttk.Button(event_box, text="View", command=lambda e=event: show_event_details(e))
-                        view_button.pack(anchor="e", pady=5)
-            else:
-                no_events_label = tk.Label(events_frame, text="No events added yet.", font=("Montserrat", 14))
-                no_events_label.pack(pady=20)
+            Label(calendar_window, text="Select a Date", font=("Arial", 16, "bold")).pack(pady=10)
 
+            cal = Calendar(calendar_window, selectmode='day', year=2025, month=1, day=25, showweeknumbers=False)
+            cal.pack(pady=20, expand=True, fill=BOTH)
 
+            def get_events():
+                """
+                Direct users to the events page for the particular
+                date after they select a date from the calendar and
+                then press the "View Events" button.
+                """
+                selected_date = cal.get_date()
+                show_events_for_date(selected_date)
 
-        # Create a frame for the form
-        form_frame = tk.Frame(self)
-        form_frame.pack(pady=10, padx=20, fill="x")
+            Button(calendar_window, text="View Events", command=get_events).pack(pady=20)
 
-        # Title
-        title_label = tk.Label(form_frame, text="Title:", font=("Montserrat", 12))
-        title_label.grid(row=0, column=0, sticky="w", pady=5)
-        title_var = tk.StringVar()
-        title_entry = ttk.Entry(form_frame, textvariable=title_var, font=("Montserrat", 12), width=40)
-        title_entry.grid(row=0, column=1, pady=5)
+        def show_events_page():
+            """
+            This function displays the 'Events' page with all the events added
+            by users.
+            Reads the `events_by_date.txt` file and shows all events.
+            """
+            events_window = Toplevel(self)
+            events_window.title("All Events")
+            events_window.geometry("600x600")
 
-        # Date
-        date_label = tk.Label(form_frame, text="Date (YYYY-MM-DD):", font=("Montserrat", 12))
-        date_label.grid(row=1, column=0, sticky="w", pady=5)
-        date_var = tk.StringVar()
-        date_entry = ttk.Entry(form_frame, textvariable=date_var, font=("Montserrat", 12), width=40)
-        date_entry.grid(row=1, column=1, pady=5)
+            header_label = Label(events_window, text="All Events", font=("Arial", 18, "bold"))
+            header_label.pack(pady=10)
 
-        # Start Time
-        start_time_label = tk.Label(form_frame, text="Start Time (HH:MM):", font=("Montserrat", 12))
-        start_time_label.grid(row=2, column=0, sticky="w", pady=5)
-        start_time_var = tk.StringVar()
-        start_time_entry = ttk.Entry(form_frame, textvariable=start_time_var, font=("Montserrat", 12), width=40)
-        start_time_entry.grid(row=2, column=1, pady=5)
+            # Scrollable Frame
+            events_frame = Frame(events_window)
+            events_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
-        # End Time
-        end_time_label = tk.Label(form_frame, text="End Time (HH:MM):", font=("Montserrat", 12))
-        end_time_label.grid(row=3, column=0, sticky="w", pady=5)
-        end_time_var = tk.StringVar()
-        end_time_entry = ttk.Entry(form_frame, textvariable=end_time_var, font=("Montserrat", 12), width=40)
-        end_time_entry.grid(row=3, column=1, pady=5)
+            canvas = Canvas(events_frame)
+            scrollbar = ttk.Scrollbar(events_frame, orient="vertical", command=canvas.yview)
+            scrollable_frame = Frame(canvas)
 
-        # Description
-        description_label = tk.Label(form_frame, text="Description:", font=("Montserrat", 12))
-        description_label.grid(row=4, column=0, sticky="nw", pady=5)
-        description_text = tk.Text(form_frame, font=("Montserrat", 12), width=40, height=5)
-        description_text.grid(row=4, column=1, pady=5)
+            scrollable_frame.bind(
+                "<Configure>",
+                lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
+            )
 
-        # Location
-        location_label = tk.Label(form_frame, text="Location:", font=("Montserrat", 12))
-        location_label.grid(row=5, column=0, sticky="w", pady=5)
-        location_var = tk.StringVar()
-        location_entry = ttk.Entry(form_frame, textvariable=location_var, font=("Montserrat", 12), width=40)
-        location_entry.grid(row=5, column=1, pady=5)
+            canvas.create_window((0, 0), window=scrollable_frame, anchor="nw")
+            canvas.configure(yscrollcommand=scrollbar.set)
 
-        # Type of Event
-        type_label = tk.Label(form_frame, text="Type of Event:", font=("Montserrat", 12))
-        type_label.grid(row=6, column=0, sticky="w", pady=5)
-        type_var = tk.StringVar()
-        type_dropdown = ttk.Combobox(form_frame, textvariable=type_var, font=("Montserrat", 12), width=38,
-                                     state="readonly")
-        type_dropdown['values'] = ["Sports", "Food", "Entertainment", "Shopping", "Study"]
-        type_dropdown.grid(row=6, column=1, pady=5)
+            canvas.pack(side="left", fill="both", expand=True)
+            scrollbar.pack(side="right", fill="y")
 
-        submit_button = ttk.Button(self, text="Submit", command=submit_event)
-        submit_button.pack(pady=10)
+            # Read and display events
+            events_found = False
 
-        result_label = tk.Label(self, text="", font=("Montserrat", 12))
-        result_label.pack(pady=10)
+            if os.path.exists(events_file):
+                with open(events_file, "r") as file:
+                    for line in file:
+                        # Ensure the line is valid
+                        if "|" in line:
+                            date, title, time, description, location, event_type = line.strip().split("|")
+                            events_found = True
 
+                            # Event Display
+                            event_box = Frame(scrollable_frame, borderwidth=1, relief="solid", padx=10, pady=10)
+                            event_box.pack(fill="x", pady=5)
+
+                            Label(event_box, text=title, font=("Arial", 14, "bold")).pack(anchor="w")
+                            Label(event_box, text=f"Date: {date} | Type: {event_type}", font=("Arial", 12)).pack(
+                                anchor="w")
+                            Label(event_box, text=f"Time: {time} | Location: {location}", font=("Arial", 12)).pack(
+                                anchor="w")
+                            Label(event_box, text=description, font=("Arial", 12, "italic")).pack(anchor="w", pady=5)
+
+            if not events_found:
+                Label(scrollable_frame, text="No events found.", font=("Arial", 14)).pack(pady=20)
+
+        def add_event_page():
+            def save_event():
+                title = title_entry.get()
+                date = cal.get_date()
+                start_time = start_time_entry.get()
+                end_time = end_time_entry.get()
+                description = description_text.get("1.0", END).strip()
+                location = location_entry.get()
+                event_type = event_type_var.get()
+
+                if not title or not date or not start_time or not end_time or not location or not event_type:
+                    error_label.config(text="All fields are required!", fg="red")
+                    return
+
+                formatted_date = date.lstrip("0").replace("/0", "/")
+
+                with open(events_file, "a") as file:
+                    file.write(
+                        f"{formatted_date}|{title}|{start_time}-{end_time}|{description}|{location}|{event_type}\n")
+
+                error_label.config(text="Event added successfully!", fg="green")
+
+                title_entry.delete(0, END)
+                start_time_entry.delete(0, END)
+                end_time_entry.delete(0, END)
+                description_text.delete("1.0", END)
+                location_entry.delete(0, END)
+                event_type_var.set("")
+
+            add_window = Toplevel(self)
+            add_window.title("Add New Event")
+            add_window.geometry("600x830")
+
+            Label(add_window, text="Add New Event", font=("Arial", 18, "bold")).pack(pady=10)
+
+            # Event Title
+            Label(add_window, text="Title:").pack(anchor="w", padx=20, pady=5)
+            title_entry = Entry(add_window, width=40)
+            title_entry.pack(padx=20, pady=5)
+
+            # Date Picker
+            Label(add_window, text="Date:").pack(anchor="w", padx=20, pady=5)
+            cal = Calendar(add_window, selectmode='day', showweeknumbers=False, font=("Arial", 12), borderwidth=2)
+            cal.pack(pady=5)
+
+            # Start and End Time
+            Label(add_window, text="Start Time:").pack(anchor="w", padx=20, pady=5)
+            start_time_entry = Entry(add_window, width=20)
+            start_time_entry.pack(padx=20, pady=5)
+
+            Label(add_window, text="End Time:").pack(anchor="w", padx=20, pady=5)
+            end_time_entry = Entry(add_window, width=20)
+            end_time_entry.pack(padx=20, pady=5)
+
+            # Description
+            Label(add_window, text="Description:").pack(anchor="w", padx=20, pady=5)
+            description_text = Text(add_window, height=5, width=50)
+            description_text.pack(padx=20, pady=5)
+
+            # Location
+            Label(add_window, text="Location:").pack(anchor="w", padx=20, pady=5)
+            location_entry = Entry(add_window, width=40)
+            location_entry.pack(padx=20, pady=5)
+
+            Label(add_window, text="Type:").pack(anchor="w", padx=20, pady=5)
+            event_type_var = StringVar()
+            event_type_dropdown = ttk.Combobox(add_window, textvariable=event_type_var,
+                                               values=["Sports", "Food", "Entertainment", "Shopping", "Study"])
+            event_type_dropdown.pack(padx=20, pady=5)
+
+            error_label = Label(add_window, text="", font=("Arial", 12))
+            error_label.pack(pady=10)
+            Button(add_window, text="Save Event", command=save_event).pack(pady=10)
+
+            Button(add_window, text="View Calendar", command=calendar_page).pack(pady=20)
+
+        Button(self, text="Add New Event", command=add_event_page, width=20).pack(pady=20)
+        Button(self, text="View Calendar", command=calendar_page, width=20).pack(pady=20)
+        Button(self, text="View Events", command=show_events_page, width=20).pack(pady=20)
+
+        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
+                                command=lambda: controller.show_frame(FirstPage))
+        back_button.place(x=20, y=20, height=20, width=34)
 
 
 class AccountPages(tk.Frame):
@@ -569,10 +588,11 @@ class LoginPage(tk.Frame):
 
 
 class ProfilePage(tk.Frame):
+    
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
-        bg = PhotoImage(file="pictures/signupbg.png")
+        bg = PhotoImage(file="pictures/profilepage.png")
         bglabel = Label(self, image=bg)
         bglabel.image = bg
         bglabel.place(x=0, y=0)
@@ -580,121 +600,16 @@ class ProfilePage(tk.Frame):
         pfp = PhotoImage(file="pictures/NEWAMONGUS.png")
         pfplabel = Label(self, image=pfp)
         pfplabel.image = pfp
-        pfplabel.place(x=100, y=100)
+        pfplabel.place(x=60, y=100)
 
-        print('jfdsklds' + user)
-        label = Label(self, text=i , font="Montserrat 15 bold")
-        label.pack()
+        username = Label(self, text=(f"hello"), fg='white', bg="#006994", font=("Montserrat 20 bold"))
+        username.place(x=200, y=120)
 
-        back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
-                                command=lambda: controller.show_frame(FirstPage))
-        back_button.place(x=20, y=20, height=20, width=34)
+        event_button = Button(self, text="New Event")
+        event_button.place(x=80, y=300)
 
-
-
-class EventsPage(tk.Frame):
-    def __init__(self, parent, controller):
-
-        tk.Frame.__init__(self, parent)
-
-
-
-        def show_event_details(event):
-            """
-            Shows the event details on a separate page after clicking the
-            view button on the events from the 'Events Page'. Uses the same
-            GUI as the 'Add Event Form'.
-            """
-            details_window = self
-            header_label = tk.Label(details_window, text="Event Details", font=("Montserrat", 18, "bold"))
-            header_label.pack(pady=20)
-
-            title_label = tk.Label(details_window, text=f"Title: {event['title']}", font=("Montserrat", 14))
-            title_label.pack(anchor="w", padx=20, pady=5)
-
-            date_label = tk.Label(details_window, text=f"Date: {event['date']}", font=("Montserrat", 14))
-            date_label.pack(anchor="w", padx=20, pady=5)
-
-            time_label = tk.Label(details_window, text=f"Time: {event['time']}", font=("Montserrat", 14))
-            time_label.pack(anchor="w", padx=20, pady=5)
-
-            description_label = tk.Label(details_window, text=f"Description: {event['description']}",
-                                         font=("Montserrat", 14), wraplength=500, justify="left")
-            description_label.pack(anchor="w", padx=20, pady=5)
-
-            location_label = tk.Label(details_window, text=f"Location: {event['location']}", font=("Montserrat", 14))
-            location_label.pack(anchor="w", padx=20, pady=5)
-
-            type_label = tk.Label(details_window, text=f"Type: {event['type']}", font=("Montserrat", 14))
-            type_label.pack(anchor="w", padx=20, pady=5)
-
-        """
-            This function displays the 'Events' page with all the events added
-            by users.
-            This function reads the txt file that was created and creates a list
-            of all data entries and puts them in a label which is ultimately
-            displayed on the 'Events' page.
-            Each event has a view button that takes the user to a separate page
-            with all the proper details listed for the public to see.
-            If there are no events added and a user goes on this page, it says
-            'No events added'.
-            """
-        events_window = self
-
-        header_label = tk.Label(events_window, text="Events", font=("Montserrat", 18, "bold"))
-        header_label.pack(pady=20)
-
-        scroll_frame = tk.Frame(events_window)
-        scroll_frame.pack(fill="both", expand=True)
-
-        canvas = tk.Canvas(scroll_frame)
-        scrollbar = ttk.Scrollbar(scroll_frame, orient="vertical", command=canvas.yview)
-        scrollbar.pack(side="right", fill="y")
-
-        canvas.pack(side="left", fill="both", expand=True)
-        canvas.configure(yscrollcommand=scrollbar.set)
-
-        events_frame = tk.Frame(canvas)
-        canvas.create_window((0, 0), window=events_frame, anchor="nw")
-
-        def on_frame_configure(event):
-            canvas.configure(scrollregion=canvas.bbox("all"))
-
-        events_frame.bind("<Configure>", on_frame_configure)
-
-
-        events_file = 'events.txt'
-
-        if os.path.exists(events_file):
-            with open(events_file, "r") as file:
-                for line in file:
-                    title, date, time, description, location, event_type = line.strip().split("|")
-                    event = {
-                        "title": title,
-                        "date": date,
-                        "time": time,
-                        "description": description,
-                        "location": location,
-                        "type": event_type
-                    }
-
-                    event_box = tk.Frame(events_frame, borderwidth=1, relief="solid", padx=10, pady=10)
-                    event_box.pack(fill="x", pady=5)
-
-                    event_title = tk.Label(event_box, text=title, font=("Montserrat", 14, "bold"))
-                    event_title.pack(anchor="w")
-
-                    event_details = tk.Label(event_box,
-                                             text=f"Event type: {event_type} | Time: {time} | Location: {location}",
-                                             font=("Montserrat", 12))
-                    event_details.pack(anchor="w")
-
-                    view_button = ttk.Button(event_box, text="View", command=lambda e=event: show_event_details(e))
-                    view_button.pack(anchor="e", pady=5)
-        else:
-            no_events_label = tk.Label(events_frame, text="No events added yet.", font=("Montserrat", 14))
-            no_events_label.pack(pady=20)
-
+        review_button = Button(self, text="Leave Review")
+        review_button.place(x=260, y=300)
 
         back_button = tk.Button(self, text="Back", font=("Montserrat 7 bold"),
                                 command=lambda: controller.show_frame(FirstPage))
