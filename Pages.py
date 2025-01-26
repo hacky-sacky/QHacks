@@ -451,7 +451,7 @@ class SignUpPage(tk.Frame):
         user_pass = []
 
         def write_csv():
-            with open("user_pass.csv", mode="a", newline="") as csvfile:
+            with open("QHacks/user_pass.csv", mode="a", newline="") as csvfile:
                 fieldnames = ["username", "password"]
                 writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
                 if csvfile.tell() == 0:
@@ -460,7 +460,7 @@ class SignUpPage(tk.Frame):
 
         def read_csv():
             user_pass.clear()
-            with open("user_pass.csv", mode="r") as csvfile:
+            with open("QHacks/user_pass.csv", mode="r") as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     user_pass.append(row)
@@ -496,11 +496,11 @@ class SignUpPage(tk.Frame):
             result = sign_up()
 
             if result == 0:
-                error = tk.Label(self, text="please fill all fields", fg='red')
-                error.place(x=200, y=280)
+                error = tk.Label(self, text="Please fill all fields.", fg='red')
+                error.place(x=200, y=380)
             elif result == 1:
-                error = tk.Label(self, text="username taken nt bro", fg='red')
-                error.place(x=200, y=280)
+                error = tk.Label(self, text="Username is already taken.", fg='red')
+                error.place(x=200, y=380)
             else:
                 global i
                 i = 1
@@ -542,7 +542,7 @@ class LoginPage(tk.Frame):
 
         def read_csv():
             user_pass.clear()
-            with open("user_pass.csv", mode="r") as csvfile:
+            with open("QHacks/user_pass.csv", mode="r") as csvfile:
                 reader = csv.DictReader(csvfile)
                 for row in reader:
                     user_pass.append(row)
@@ -571,8 +571,8 @@ class LoginPage(tk.Frame):
             result = login()
 
             if result == 0:
-                error = tk.Label(self, text="wrong password bro", fg='red')
-                error.place(x=200, y=280)
+                error = tk.Label(self, text="Wrong Password. Try again.", fg='red')
+                error.place(x=200, y=380)
             else:
                 global i
                 i = 1
