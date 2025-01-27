@@ -2,7 +2,6 @@ import tkinter as tk
 from calendar import calendar
 from tkinter import ttk
 from tkinter import *
-from PIL import Image, ImageTk
 import random
 import csv
 import os
